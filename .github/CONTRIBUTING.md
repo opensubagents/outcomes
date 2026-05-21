@@ -69,6 +69,25 @@ regression test.
 - **TypeScript.** Strict mode. `eslint` and `vitest` run in CI; format with
   `prettier`.
 
+## CI secrets
+
+The `example-research-engineering` job in
+[`.github/workflows/python-sdk.yml`](./workflows/python-sdk.yml) reads the
+sibling repository
+[`opensubagents/research-engineering`](https://github.com/opensubagents/research-engineering)
+via `actions/checkout`. The default `GITHUB_TOKEN` is scoped to this
+repo only, so the job needs a cross-repo token to clone the sibling.
+
+Maintainers: add a fine-scoped Personal Access Token or GitHub App
+token with **read** access to both `opensubagents/outcomes` and
+`opensubagents/research-engineering` as the repository secret
+`SIBLINGS_READ_TOKEN` (Settings → Secrets and variables → Actions →
+New repository secret).
+
+Until the secret is added, the `example-research-engineering` job will
+fail. The other CI jobs (`test`, `markdownlint`, `validate-schemas`,
+`typescript-sdk`) do not need it and run unaffected.
+
 ## Reporting security issues
 
 See [SECURITY.md](./SECURITY.md). Please do not file security issues in the

@@ -38,6 +38,12 @@ jobs:
         with:
           repository: opensubagents/research-engineering
           path: _siblings/research-engineering
+          # The default GITHUB_TOKEN is scoped to this repo only; reading
+          # the sibling needs a cross-repo PAT or App token. Add the
+          # secret `SIBLINGS_READ_TOKEN` (read access to both repos)
+          # under Settings → Secrets and variables → Actions. See
+          # CONTRIBUTING.md.
+          token: ${{ secrets.SIBLINGS_READ_TOKEN }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
