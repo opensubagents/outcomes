@@ -1,0 +1,42 @@
+[project]
+name = "open-outcome"
+version = "0.1.0"
+description = "Reference Python SDK for the Open Outcome spec: declare, verify, and grade AI agent outcomes."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "The opensubagents Authors" },
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6",
+    "jsonschema>=4.21",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/opensubagents/outcomes"
+Specification = "https://github.com/opensubagents/outcomes/blob/main/specification/README.md"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["open_outcome*"]
+
+[tool.setuptools.package-data]
+"open_outcome" = ["schemas/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

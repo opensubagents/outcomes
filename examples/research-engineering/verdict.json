@@ -1,0 +1,105 @@
+{
+  "dimensions": [
+    {
+      "justification": "all claims calibrated",
+      "name": "confidence_calibration",
+      "score": 5
+    },
+    {
+      "justification": "9/11 primary",
+      "name": "citation_quality",
+      "score": 5
+    },
+    {
+      "justification": "8/9 required axes mentioned",
+      "name": "coverage",
+      "score": 5
+    },
+    {
+      "justification": "4/4 decision signals present",
+      "name": "decision_usefulness",
+      "score": 5
+    },
+    {
+      "justification": "summary is 4 sentences",
+      "name": "clarity",
+      "score": 5
+    }
+  ],
+  "evidence": [
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "quote": "Subagents cannot spawn their own subagents. Don't include `Agent` in a subagent's `tools` array.",
+      "title": "Subagents in the SDK - Claude Docs",
+      "url": "https://code.claude.com/docs/en/agent-sdk/subagents"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "title": "Building agents with the Claude Agent SDK",
+      "url": "https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "quote": "provider-agnostic, supporting the OpenAI Responses and Chat Completions APIs, as well as 100+ other LLMs",
+      "title": "openai/openai-agents-python on GitHub",
+      "url": "https://github.com/openai/openai-agents-python"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "title": "OpenAI Agents SDK (Python)",
+      "url": "https://openai.github.io/openai-agents-python/"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "title": "langgraph/LICENSE at main",
+      "url": "https://github.com/langchain-ai/langgraph/blob/main/LICENSE"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "quote": "Low-level orchestration framework for building stateful agents.",
+      "title": "langchain-ai/langgraph on GitHub",
+      "url": "https://github.com/langchain-ai/langgraph"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "title": "crewAI/LICENSE at main",
+      "url": "https://github.com/crewAIInc/crewAI/blob/main/LICENSE"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "quote": "completely independent of LangChain or other agent frameworks",
+      "title": "crewAIInc/crewAI on GitHub",
+      "url": "https://github.com/crewAIInc/crewAI"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "primary",
+      "title": "Introducing Strands Agents, an Open Source AI Agents SDK",
+      "url": "https://aws.amazon.com/blogs/opensource/introducing-strands-agents-an-open-source-ai-agents-sdk/"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "secondary",
+      "title": "Strands Agents \u2014 Open Source AI Agent SDK",
+      "url": "https://strandsagents.com/"
+    },
+    {
+      "accessed": "2026-05-21",
+      "kind": "secondary",
+      "title": "Best Multi-Agent Frameworks in 2026",
+      "url": "https://gurusup.com/blog/best-multi-agent-frameworks-2026"
+    }
+  ],
+  "notes": "HeuristicVerifier (no LLM)",
+  "overall": 5.0,
+  "spec_version": "0.1.0",
+  "verifier_id": "open-outcome.python.heuristic"
+}
