@@ -1,11 +1,6 @@
 """Verifier interface and the reference HeuristicVerifier.
 
 Implements Section 2 (Verifier) of the Open Outcome spec.
-
-``HeuristicVerifier`` ports the algorithm of
-``research_engineering.harness.grader.HeuristicGrader`` one-to-one so the
-``examples/research-engineering/`` end-to-end can assert byte-level parity
-between the two implementations.
 """
 from __future__ import annotations
 
@@ -34,12 +29,7 @@ class Verifier(Protocol):
 
 
 class HeuristicVerifier:
-    """Deterministic verifier with no network and no LLM. Section 2.2.
-
-    Ports the per-dimension scoring methods from research-engineering's
-    ``HeuristicGrader`` verbatim so the verdicts agree byte-for-byte on
-    the same input.
-    """
+    """Deterministic verifier with no network and no LLM. Section 2.2."""
 
     def verify(self, outcome: OutcomeDeclaration, report: Report) -> Verdict:
         dimensions: tuple[DimensionScore, ...] = (

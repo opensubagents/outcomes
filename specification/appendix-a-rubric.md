@@ -10,11 +10,8 @@ description: The five-dimension reference rubric used by the SDKs.
 > [section 3](./sections/03-verdict.md)).
 
 The reference SDKs ship a heuristic verifier that scores reports along
-five dimensions. These dimensions originated in the
-[`opensubagents/research-engineering`](https://github.com/opensubagents/research-engineering)
-plugin and are reused here so the
-[`examples/research-engineering/`](../examples/research-engineering/)
-end-to-end can assert byte-level parity with that plugin's grader.
+five dimensions. The rubric is deterministic, requires no LLM, and is
+designed to be cheap enough to run on every report.
 
 ## The five dimensions
 
@@ -59,9 +56,11 @@ sentences as `5`, summaries of 1 or 5 sentences as `3`, anything else as
 ## Why these five
 
 The five-dimension rubric is the empirical contract that drove the
-existence of this spec — research-engineering reports were being graded
-along these dimensions before Open Outcome existed, and the spec was
-deliberately built to *standardize the shape that allows this rubric*, not
-to impose this rubric on every implementation. Implementations that want
-different dimensions are free to define them, provided the resulting
-verdict still satisfies [section 3](./sections/03-verdict.md).
+existence of this spec — these dimensions captured the failure modes
+practitioners cared about (uncalibrated confidence, weak sourcing, missed
+required axes, ungrounded recommendations, unreadable summaries) before
+Open Outcome existed, and the spec was deliberately built to *standardize
+the shape that allows this rubric*, not to impose this rubric on every
+implementation. Implementations that want different dimensions are free
+to define them, provided the resulting verdict still satisfies
+[section 3](./sections/03-verdict.md).

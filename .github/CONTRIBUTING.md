@@ -15,9 +15,6 @@ cd sdk-python && uv pip install -e '.[dev]' && pytest && cd ..
 
 # TypeScript reference SDK
 cd sdk-typescript && pnpm install && pnpm test && cd ..
-
-# End-to-end example
-cd examples/research-engineering && uv pip install -e . && python run.py && cd ../..
 ```
 
 ## What lives where
@@ -30,9 +27,6 @@ cd examples/research-engineering && uv pip install -e . && python run.py && cd .
 - The **reference SDKs** in `sdk-python/` and `sdk-typescript/` MUST stay in
   parity. A PR that changes one SHOULD also change the other; if it cannot,
   open a tracking issue.
-- **Examples** in `examples/` are end-to-end tests that exercise the spec
-  against real fixtures.
-
 ## Pull request flow
 
 1. **Open an issue first** for anything larger than a typo. This lets us
@@ -44,8 +38,7 @@ cd examples/research-engineering && uv pip install -e . && python run.py && cd .
    (DCO): every commit message must end with `Signed-off-by: Your Name
    <you@example.com>`. You can add this automatically with `git commit -s`.
 4. **Add tests**. Python changes go in `sdk-python/tests/`; TypeScript
-   changes go in `sdk-typescript/test/`. End-to-end changes go in
-   `examples/`.
+   changes go in `sdk-typescript/test/`.
 5. **Update the schemas, spec, and SDKs in the same PR** if your change
    touches normative shape. CI will fail otherwise.
 6. **Open a draft PR early**. Mark ready-for-review when CI is green and the
@@ -68,25 +61,6 @@ regression test.
   with `ruff format`.
 - **TypeScript.** Strict mode. `eslint` and `vitest` run in CI; format with
   `prettier`.
-
-## CI secrets
-
-The `example-research-engineering` job in
-[`.github/workflows/python-sdk.yml`](./workflows/python-sdk.yml) reads the
-sibling repository
-[`opensubagents/research-engineering`](https://github.com/opensubagents/research-engineering)
-via `actions/checkout`. The default `GITHUB_TOKEN` is scoped to this
-repo only, so the job needs a cross-repo token to clone the sibling.
-
-Maintainers: add a fine-scoped Personal Access Token or GitHub App
-token with **read** access to both `opensubagents/outcomes` and
-`opensubagents/research-engineering` as the repository secret
-`SIBLINGS_READ_TOKEN` (Settings → Secrets and variables → Actions →
-New repository secret).
-
-Until the secret is added, the `example-research-engineering` job will
-fail. The other CI jobs (`test`, `markdownlint`, `validate-schemas`,
-`typescript-sdk`) do not need it and run unaffected.
 
 ## Reporting security issues
 

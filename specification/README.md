@@ -60,7 +60,6 @@ breaking-change policy at each maturity stage.
 | [A](./appendix-a-rubric.md) | Reference rubric — the five dimensions |
 | [B](./appendix-b-otel-extension.md) | Proposed OpenTelemetry `gen_ai.outcome.*` extension |
 | [C](./appendix-c-conformance.md) | Conformance — how to claim it |
-| [D](./appendix-d-worked-example.md) | Worked example — research-engineering |
 
 ## Versioning
 

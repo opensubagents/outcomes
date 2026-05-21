@@ -57,8 +57,8 @@ console.log(verdictToSpanAttributes(verdict));
 ## Parity with the Python SDK
 
 This SDK implements the **same `HeuristicVerifier` algorithm** as the Python
-SDK. The conformance test suite in `../examples/research-engineering/`
-asserts that both SDKs produce equal verdicts on the same fixture.
+SDK. Each SDK's test suite includes shared fixtures so both implementations
+produce equal verdicts on the same input.
 
 ## Layout
 
