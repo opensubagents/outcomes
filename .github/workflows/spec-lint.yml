@@ -1,0 +1,57 @@
+name: spec-lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli@0.41.0
+      - name: Lint specification/ and docs/
+        run: |
+          markdownlint \
+            --disable MD001 MD013 MD025 MD033 MD041 -- \
+            'specification/**/*.md' \
+            'docs/**/*.md' \
+            'README.md' \
+            'GOVERNANCE.md' \
+            'MAINTAINERS.md' \
+            'MATURITY.md'
+
+  validate-schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install ajv
+        run: npm install -g ajv-cli@5.0.0 ajv-formats@3.0.1
+      - name: Validate JSON Schemas are themselves valid JSON Schemas
+        run: |
+          for f in schema/*.schema.json; do
+            echo "::group::$f"
+            ajv compile --spec=draft2020 -s "$f" -r schema/evidence.schema.json -c ajv-formats || \
+              ajv compile --spec=draft2020 -s "$f" -c ajv-formats
+            echo "::endgroup::"
+          done
+      - name: Validate fixtures against schemas
+        run: |
+          ajv validate --spec=draft2020 \
+            -s schema/outcome.schema.json \
+            -c ajv-formats \
+            -d 'examples/**/outcome.json'
+          ajv validate --spec=draft2020 \
+            -s schema/verdict.schema.json \
+            -r schema/evidence.schema.json \
+            -c ajv-formats \
+            -d 'examples/**/verdict.json'

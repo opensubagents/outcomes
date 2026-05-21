@@ -1,0 +1,8 @@
+# Code owners for opensubagents/outcomes.
+#
+# Until the TSC expands beyond its founding seat, all paths are owned by the
+# founding maintainer (see MAINTAINERS.md). When new TSC members join, this
+# file should be updated to give them ownership of the areas where they
+# review.
+
+* @zhoukalex
