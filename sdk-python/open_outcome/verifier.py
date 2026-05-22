@@ -5,6 +5,7 @@ Implements Section 2 (Verifier) of the Open Outcome spec.
 from __future__ import annotations
 
 from collections import Counter
+from datetime import date, timedelta
 from typing import Protocol
 
 from .conformance import SPEC_VERSION
@@ -12,6 +13,9 @@ from .evidence import Confidence, SourceKind
 from .outcome import OutcomeDeclaration
 from .report import Report
 from .verdict import DimensionScore, Verdict
+
+
+STALE_CITATION_DAYS = 180
 
 
 REFERENCE_VERIFIER_ID = "open-outcome.python.heuristic"
@@ -113,6 +117,17 @@ class HeuristicVerifier:
             score, just = 2, "secondary only"
         else:
             score, just = 1, "community-only sourcing"
+
+        # Citation-staleness downgrade: if a majority of citations are older
+        # than STALE_CITATION_DAYS at the time of scoring, drop one point.
+        # Floor at 1.
+        today = date.today()
+        stale_threshold = today - timedelta(days=STALE_CITATION_DAYS)
+        stale_count = sum(1 for c in cits if c.accessed < stale_threshold)
+        if stale_count * 2 > len(cits) and score > 1:
+            score -= 1
+            just = f"{just}; {stale_count}/{len(cits)} citations stale (>{STALE_CITATION_DAYS}d)"
+
         return DimensionScore(
             name="citation_quality",
             score=score,
