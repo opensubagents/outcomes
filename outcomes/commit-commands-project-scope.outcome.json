@@ -1,0 +1,20 @@
+{
+  "title": "Install commit-commands plugin at project scope and document the version-controlled plugin discipline",
+  "as_of": "2026-05-22",
+  "question": "Does this PR enable the commit-commands@claude-plugins-official plugin at project scope via .claude/settings.json and add a CLAUDE.md that codifies the project-scope plugin and MCP discipline so future Claude Code sessions on this repo inherit the same toolset deterministically?",
+  "success_criteria": [
+    ".claude/settings.json declares enabledPlugins with commit-commands@claude-plugins-official set to true so the plugin loads at project scope",
+    "CLAUDE.md is added at the repo root and documents the project-scope plugin and MCP policy plus the currently-enabled plugins table",
+    "CONTRIBUTING.md is updated so contributors are aware of the new commit workflow via slash command",
+    "no outcomes star outcome json or star report json files are touched by this PR so the outcome-gate's pair check is satisfied only by this new pair"
+  ],
+  "archetype": "capability_audit",
+  "archetype_fields": {
+    "capabilities": [
+      ".claude/settings.json enables commit-commands@claude-plugins-official at project scope",
+      "CLAUDE.md documents the project-scope plugin and MCP discipline and lists currently-enabled plugins",
+      "CONTRIBUTING.md mentions the new commit workflow so contributors discover it"
+    ]
+  },
+  "requester": "zhouk.alex@gmail.com"
+}
