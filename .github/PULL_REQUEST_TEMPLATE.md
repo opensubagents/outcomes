@@ -11,6 +11,20 @@ Thanks for sending a PR! A few quick prompts:
 
 <!-- One or two sentences. What changed and why. -->
 
+## Outcome
+
+This repo gates merges on its own rubric. Every PR — including docs and
+tooling — adds a new outcome+report pair under `outcomes/`. The pair is
+scored by `HeuristicVerifier` (see
+[Appendix A](../specification/appendix-a-rubric.md)) and merge is blocked
+when `verdict.overall < 3.5`.
+
+- [ ] Added `outcomes/<slug>.outcome.json` describing what this PR claims to achieve.
+- [ ] Added `outcomes/<slug>.report.json` carrying the evidence that the claim is met.
+- [ ] Verified locally: `python -m open_outcome.cli verify outcomes/<slug>.outcome.json outcomes/<slug>.report.json`
+
+Example slug for this PR: `<short-kebab-case>` (e.g. `revert-session-start-hook`).
+
 ## Type of change
 
 - [ ] Normative (spec, schema, or public SDK surface)
