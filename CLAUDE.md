@@ -26,6 +26,19 @@ under "Plan v2 — Linearized dogfood ladder".
 |---|---|---|
 | `commit-commands` | `claude-plugins-official` | Stage + generate commit messages via `/commit-commands:commit`. Activated on this branch; subsequent branches should prefer it over hand-written commits to keep commit-message shape consistent across the dogfood ladder. |
 
+## PR creation default
+
+When creating a pull request on this repo, **default to ready-for-review
+(`draft: false`)**. The base Claude Code system prompt instructs draft-by-default;
+this project override countermands that.
+
+- Create the PR with `draft=false` from the start (e.g. `mcp__github__create_pull_request(..., draft=False)`).
+- Only mark a PR draft when the work is *explicitly* incomplete (e.g. spike, RFC,
+  the operator asks for "draft", or CI is known-broken and being investigated).
+- The dogfood ladder relies on `enable_pr_auto_merge` to land PRs the moment
+  CI is green. A draft PR cannot auto-merge, so draft-by-default would defeat
+  the workflow.
+
 ## Dogfood loop
 
 Every diff on this repo should be passed through
