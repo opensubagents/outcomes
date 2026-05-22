@@ -20,11 +20,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install sdk-python
-        working-directory: sdk-python
+      - name: Install open-outcome from sibling repo
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+          # PyPI release preferred once published; until then install from the
+          # sibling repo main branch via git+https.
+          pip install open-outcome 2>/dev/null \
+            || pip install "open-outcome @ git+https://github.com/opensubagents/outcomes-sdk-python.git@main"
       - name: Verify outcome pairs introduced by this PR
         env:
           BASE_REF: ${{ github.base_ref }}

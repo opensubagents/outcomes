@@ -1,0 +1,23 @@
+{
+  "title": "Split the reference SDKs out of opensubagents/outcomes into their own repos so each can release independently",
+  "as_of": "2026-05-22",
+  "question": "Does opensubagents/outcomes drop sdk-python and sdk-typescript from its tree and point at the two new sibling repos opensubagents/outcomes-sdk-python and opensubagents/outcomes-sdk-typescript while preserving the spec schema dogfooded outcome pairs and docs as the sole responsibility of this repo?",
+  "success_criteria": [
+    "sdk-python directory is git removed and no longer appears on origin main of opensubagents outcomes",
+    "sdk-typescript directory is git removed and no longer appears on origin main of opensubagents outcomes",
+    "github workflows python-sdk yml and typescript-sdk yml are removed because the SDK-specific CI now lives in the sibling repos and the only workflow that stays is outcome-gate yml plus spec-lint yml",
+    "the top-level README documents the split with a sibling-repos table that names the new GitHub URLs and the pip install open-outcome plus npm install at opensubagents outcomes-sdk install commands",
+    "the outcome-gate workflow still scores this PR at or above the 3.5 floor against the python HeuristicVerifier so the gate is dogfooded against the change that removes the SDK that powers the gate"
+  ],
+  "archetype": "capability_audit",
+  "archetype_fields": {
+    "capabilities": [
+      "sdk-python subtree git removed from main",
+      "sdk-typescript subtree git removed from main",
+      "SDK-specific workflows removed; outcome-gate and spec-lint remain",
+      "README rewritten with sibling-repos table and updated install commands",
+      "outcome-gate PR passes at or above 3.5"
+    ]
+  },
+  "requester": "alex@jadecli.com"
+}
