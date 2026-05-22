@@ -1,0 +1,17 @@
+{
+  "summary": "Stuff happened.",
+  "claims": [
+    {
+      "statement": "Mumble mumble.",
+      "confidence": "low",
+      "citations": [
+        {
+          "url": "https://example.com/forum/post/42",
+          "title": "random forum post",
+          "accessed": "2026-05-21",
+          "kind": "community"
+        }
+      ]
+    }
+  ]
+}
