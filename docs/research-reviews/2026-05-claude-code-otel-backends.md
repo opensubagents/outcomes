@@ -23,20 +23,20 @@ Each substantive claim in the research was re-fetched at the cited URL
 on 2026-05-22 and compared to the wording in the research doc. The
 Claude-Code-CLI-specific claims (`prompt.id` exclusion, default export
 intervals) were verified via the `claude-code-guide` subagent against
-the current `https://code.claude.com/docs/en/monitoring-usage` page.
+the current `<https://code.claude.com/docs/en/monitoring-usage>` page.
 
 ## Per-claim verdicts
 
 | # | Research claim | Verdict | Source fetched | Notes |
 |---|---|---|---|---|
-| 1 | Axiom Metrics GA on 2026-03-27 with MetricsDB / MPL, "no active time series limits" | **Confirmed** | https://axiom.co/changelog/metrics-mpl | Verbatim: *"Metrics are now generally available. MetricsDB applies the same architecture Axiom already uses for logs, traces, and events..."*; date 2026-03-27. |
-| 2 | Axiom publishes a Claude-Code-specific OTel guide using `x-axiom-metrics-dataset` and `x-axiom-dataset` headers | **Confirmed** | https://axiom.co/docs/guides/opentelemetry-claude-code | Page resolves, two datasets required, env vars `OTEL_EXPORTER_OTLP_{METRICS,LOGS}_{ENDPOINT,HEADERS}`. |
-| 3 | Cloudflare's CF-native "Destinations" path does **not** support OTel metrics for any vendor today | **Confirmed** | https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/ | Verbatim: *"Exporting Worker infrastructure metrics and custom metrics via OpenTelemetry is not currently available."* (Known limitations.) |
-| 4 | Honeycomb Metrics is still in Beta as of May 2026 with carve-outs ("Creating SLOs using metrics" unsupported, Metrics datasets excluded from environment-wide queries) | **Contradicted** | https://www.honeycomb.io/blog/honeycomb-metrics-generally-available | Verbatim: *"Today, we are announcing the general availability of Honeycomb Metrics: native time series storage for infrastructure metrics, fully integrated with Honeycomb's existing events platform, with both models queryable through a single interface."* Date: **2026-03-11**, ~two weeks before Axiom's metrics GA. The cited beta-status doc page (`docs.honeycomb.io/.../experimental-features/metrics/`) is now a historical artifact. **This materially weakens the Honeycomb "runner-up" tradeoff in the research.** |
-| 5 | Claude Code monitoring docs say "prompt.id is intentionally excluded from metrics" and default intervals are "60 seconds for metrics and 5 seconds for logs" | **Confirmed verbatim** | https://code.claude.com/docs/en/monitoring-usage (via `claude-code-guide` subagent) | Both quotes match the page word-for-word. |
-| 6 | Honeycomb's "Claude Code Monitoring" Board template exists; Honeycomb blog walks through env-var setup | **Confirmed** | https://www.honeycomb.io/blog/can-claude-code-observe-its-own-code | Verbatim: *"To create the monitoring board, go to the 'Boards' tab, select 'Templates,' and select 'Claude Code Monitoring.'"* |
-| 7 | Honeycomb pricing — Free 20M events, Pro from $130 / 100M events | **Confirmed (with addendum)** | https://www.honeycomb.io/pricing | Verbatim: *"Free: Up to 20M events and 100M time series data points"* and *"Pro: Starting at $130 / 100M events (up to 1.5B) and 500M time series data points"*. The research understated by omitting the metrics-data-point allowances. |
-| 8 | Grafana Cloud "billable series = active series × DPM" | **Partially incorrect** | https://grafana.com/docs/grafana-cloud/cost-management-and-billing/manage-invoices/understand-your-invoice/metrics-invoice/ | Active-series definition is correct: *"A time series is considered active if new data points have been received within the last 20 minutes."* But the billing formula is the maximum of two terms, not their product: `usage = max(active_series, total_dpm/included_dpm)` × `$6.50 / 1000`. The qualitative high-cardinality cost trap still holds; the multiplicative phrasing is wrong. |
+| 1 | Axiom Metrics GA on 2026-03-27 with MetricsDB / MPL, "no active time series limits" | **Confirmed** | <https://axiom.co/changelog/metrics-mpl> | Verbatim: *"Metrics are now generally available. MetricsDB applies the same architecture Axiom already uses for logs, traces, and events..."*; date 2026-03-27. |
+| 2 | Axiom publishes a Claude-Code-specific OTel guide using `x-axiom-metrics-dataset` and `x-axiom-dataset` headers | **Confirmed** | <https://axiom.co/docs/guides/opentelemetry-claude-code> | Page resolves, two datasets required, env vars `OTEL_EXPORTER_OTLP_{METRICS,LOGS}_{ENDPOINT,HEADERS}`. |
+| 3 | Cloudflare's CF-native "Destinations" path does **not** support OTel metrics for any vendor today | **Confirmed** | <https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/> | Verbatim: *"Exporting Worker infrastructure metrics and custom metrics via OpenTelemetry is not currently available."* (Known limitations.) |
+| 4 | Honeycomb Metrics is still in Beta as of May 2026 with carve-outs ("Creating SLOs using metrics" unsupported, Metrics datasets excluded from environment-wide queries) | **Contradicted** | <https://www.honeycomb.io/blog/honeycomb-metrics-generally-available> | Verbatim: *"Today, we are announcing the general availability of Honeycomb Metrics: native time series storage for infrastructure metrics, fully integrated with Honeycomb's existing events platform, with both models queryable through a single interface."* Date: **2026-03-11**, ~two weeks before Axiom's metrics GA. The cited beta-status doc page (`docs.honeycomb.io/.../experimental-features/metrics/`) is now a historical artifact. **This materially weakens the Honeycomb "runner-up" tradeoff in the research.** |
+| 5 | Claude Code monitoring docs say "prompt.id is intentionally excluded from metrics" and default intervals are "60 seconds for metrics and 5 seconds for logs" | **Confirmed verbatim** | <https://code.claude.com/docs/en/monitoring-usage> (via `claude-code-guide` subagent) | Both quotes match the page word-for-word. |
+| 6 | Honeycomb's "Claude Code Monitoring" Board template exists; Honeycomb blog walks through env-var setup | **Confirmed** | <https://www.honeycomb.io/blog/can-claude-code-observe-its-own-code> | Verbatim: *"To create the monitoring board, go to the 'Boards' tab, select 'Templates,' and select 'Claude Code Monitoring.'"* |
+| 7 | Honeycomb pricing — Free 20M events, Pro from $130 / 100M events | **Confirmed (with addendum)** | <https://www.honeycomb.io/pricing> | Verbatim: *"Free: Up to 20M events and 100M time series data points"* and *"Pro: Starting at $130 / 100M events (up to 1.5B) and 500M time series data points"*. The research understated by omitting the metrics-data-point allowances. |
+| 8 | Grafana Cloud "billable series = active series × DPM" | **Partially incorrect** | <https://grafana.com/docs/grafana-cloud/cost-management-and-billing/manage-invoices/understand-your-invoice/metrics-invoice/> | Active-series definition is correct: *"A time series is considered active if new data points have been received within the last 20 minutes."* But the billing formula is the maximum of two terms, not their product: `usage = max(active_series, total_dpm/included_dpm)` × `$6.50 / 1000`. The qualitative high-cardinality cost trap still holds; the multiplicative phrasing is wrong. |
 
 ## Material findings the research did not state
 
@@ -127,13 +127,13 @@ the spec ever picking a vendor.
 
 ## Citations
 
-- https://axiom.co/changelog/metrics-mpl (primary, accessed 2026-05-22)
-- https://axiom.co/docs/guides/opentelemetry-claude-code (primary, accessed 2026-05-22)
-- https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/ (primary, accessed 2026-05-22)
-- https://www.honeycomb.io/blog/honeycomb-metrics-generally-available (primary, accessed 2026-05-22)
-- https://docs.honeycomb.io/troubleshoot/product-lifecycle/experimental-features/metrics/ (primary, accessed 2026-05-22 — now historical)
-- https://code.claude.com/docs/en/monitoring-usage (primary, accessed 2026-05-22 via `claude-code-guide` subagent)
-- https://www.honeycomb.io/blog/can-claude-code-observe-its-own-code (secondary, accessed 2026-05-22)
-- https://www.honeycomb.io/pricing (primary, accessed 2026-05-22)
-- https://grafana.com/docs/grafana-cloud/cost-management-and-billing/manage-invoices/understand-your-invoice/metrics-invoice/ (primary, accessed 2026-05-22)
-- https://changelog.honeycomb.io/metrics-and-slos-available-for-pro-plans-228153 (secondary, surfaced via WebSearch on 2026-05-22)
+- <https://axiom.co/changelog/metrics-mpl> (primary, accessed 2026-05-22)
+- <https://axiom.co/docs/guides/opentelemetry-claude-code> (primary, accessed 2026-05-22)
+- <https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/> (primary, accessed 2026-05-22)
+- <https://www.honeycomb.io/blog/honeycomb-metrics-generally-available> (primary, accessed 2026-05-22)
+- <https://docs.honeycomb.io/troubleshoot/product-lifecycle/experimental-features/metrics/> (primary, accessed 2026-05-22 — now historical)
+- <https://code.claude.com/docs/en/monitoring-usage> (primary, accessed 2026-05-22 via `claude-code-guide` subagent)
+- <https://www.honeycomb.io/blog/can-claude-code-observe-its-own-code> (secondary, accessed 2026-05-22)
+- <https://www.honeycomb.io/pricing> (primary, accessed 2026-05-22)
+- <https://grafana.com/docs/grafana-cloud/cost-management-and-billing/manage-invoices/understand-your-invoice/metrics-invoice/> (primary, accessed 2026-05-22)
+- <https://changelog.honeycomb.io/metrics-and-slos-available-for-pro-plans-228153> (secondary, surfaced via WebSearch on 2026-05-22)

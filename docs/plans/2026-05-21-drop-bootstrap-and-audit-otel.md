@@ -15,10 +15,12 @@ We are on branch `claude/beautiful-ptolemy-lbKSw` (tracks `main`). Working tree 
 Delete the example dir and unwind every reference to it. Keep generic `opensubagents/*` mentions (org namespace, npm scope `@opensubagents/open-outcome`, LICENSE copyright) — only purge mentions of the research-engineering **plugin** as a required/optional component of Open Outcome.
 
 Files to delete:
+
 - `examples/research-engineering/` (whole directory: `run.py`, `pyproject.toml`, `README.md`, `report.json`, `outcome.json`, `verdict.json`, `tests/`)
 - `specification/appendix-d-worked-example.md`
 
 Files to edit:
+
 - `README.md` — drop the `examples/research-engineering/` row from the layout table (line 31) and the "End-to-end with the research-engineering plugin" block (lines 82–83). Replace the latter with a one-liner that points readers to the schemas and the unit tests in each SDK as the executable proof.
 - `specification/README.md` — drop the appendix-D row (line 63).
 - `specification/appendix-a-rubric.md` — re-read; rewrite any sentence that uses research-engineering as its example to use a generic placeholder (e.g., "a sample report").
@@ -28,6 +30,7 @@ Files to edit:
 - `docs/adrs/ADR-0001-name-and-scope.md`, `ADR-0002-sdk-generation.md` — re-read; if either ADR depends on the example existing, add a follow-up ADR-0003 ("Drop bootstrap example") rather than rewriting history. Otherwise leave them.
 
 Files to leave alone (matches are namespace/scope only, not plugin coupling):
+
 - `LICENSE` (copyright line)
 - `schema/*.json` and `sdk-{python,typescript}/.../schemas/*.json` ($id URLs under `opensubagents/outcomes`)
 - `sdk-typescript/package.json` (npm scope `@opensubagents/open-outcome`)
@@ -35,6 +38,7 @@ Files to leave alone (matches are namespace/scope only, not plugin coupling):
 - `.github/CODEOWNERS` (just names the org)
 
 Verification:
+
 - `grep -rn "research-engineering\|research_engineering" --exclude-dir=.git` returns only `docs/founding-research.md` (historical) and any net-new ADR.
 - `cd sdk-python && uv run pytest` passes.
 - `cd sdk-typescript && npm test` passes.
@@ -45,6 +49,7 @@ Verification:
 Goal: produce a short, signed validation memo so the next branch isn't built on unchecked claims. Output: `docs/research-reviews/2026-05-claude-code-otel-backends.md` (new file). Treat this as a research review, not a spec change.
 
 Checks (each as a single WebFetch/WebSearch call, or via the `claude-code-guide` subagent for Claude-Code-CLI-specific claims):
+
 1. **Axiom metrics GA date** — verify `https://axiom.co/changelog/metrics-mpl` actually says "metrics generally available" on or around 2026-03-27.
 2. **Axiom Claude Code OTel guide exists** — verify `https://axiom.co/docs/guides/opentelemetry-claude-code` resolves and mentions `x-axiom-metrics-dataset`.
 3. **Cloudflare "Export to" pages** — verify the Axiom, Honeycomb, and Grafana destination docs under `developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/` exist and confirm the doc's claim that **no vendor's CF-native path supports OTel metrics yet**.
@@ -54,6 +59,7 @@ Checks (each as a single WebFetch/WebSearch call, or via the `claude-code-guide`
 7. **Premise check** — call out that the research's "hard Cloudflare Workers integration requirement" is not motivated anywhere in the outcomes repo. Outcomes' SDKs are Python and TypeScript libraries; nothing in v0.1 runs on CF Workers. If the CF requirement comes from a separate effort (Claude Code dogfood infra, an MCP server, etc.) the user should confirm; if it doesn't apply, the vendor ranking changes (Grafana Cloud's broader native OTLP support becomes more competitive).
 
 The memo should have:
+
 - **Verdict per claim**: confirmed / unverifiable / contradicted, with the URL fetched and the quote.
 - **Scope correction**: the research is about Claude Code CLI telemetry, not the Open Outcome spec. Recommend keeping `appendix-b-otel-extension.md` vendor-neutral.
 - **Dev-infra recommendation**: if the team wants a backend for dogfooding outcomes development, Axiom is a defensible default *provided* the CF Workers requirement is real; otherwise re-evaluate.
@@ -92,7 +98,7 @@ before exit. Outcome archetype `deep_dive`, six success criteria, six
 claims with fifteen citations (twelve primary). Run locally with the
 already-installed `sdk-python/.venv` to reproduce.
 
-```
+```text
 overall: 4.4 / 5   (pass threshold: 4.0)
   confidence_calibration: 5  — all claims calibrated
   citation_quality:       5  — 12/15 primary
