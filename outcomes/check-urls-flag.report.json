@@ -1,0 +1,66 @@
+{
+  "summary": "We recommend shipping the optional --check-urls flag as a CLI-only opt-in path that runs after the deterministic HeuristicVerifier returns its verdict because keeping the verifier itself network-free preserves Section 2.1.2 purity while still letting CI workflows that want a stronger freshness check turn it on per-PR. The tradeoff against making URL liveness mandatory is that hard-gating on the network would create flaky-network false negatives so transport errors are explicitly ignored and only true 4xx or 5xx responses trigger the one-point downgrade with a floor of 1. Two new pytest tests cover the downgrade path and the off-by-default invariant and the spec rubric documents the flag normatively.",
+  "claims": [
+    {
+      "statement": "sdk-python open_outcome cli py exposes a --check-urls flag on the verify subcommand and the flag is off by default because argparse stores it as a boolean via action store_true and the CLI threads it into _verify through a new positional parameter that gates the call to _apply_url_liveness.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/open_outcome/cli.py",
+          "title": "sdk-python cli py with --check-urls argparse argument and the gated invocation",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/specification/appendix-a-rubric.md",
+          "title": "appendix-a-rubric md documents the --check-urls flag under the citation_quality dimension",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "The HeuristicVerifier verify method itself remains pure with no network calls; the URL check lives in the CLI layer so that programmatic verifier consumers do not need to reason about network behavior."
+    },
+    {
+      "statement": "when --check-urls is set the CLI HEAD-requests each citation URL using urllib request and downgrades citation_quality by one with floor 1 if any URL returns HTTP 400 or higher because _head_check returns the integer status code on HTTPError and _apply_url_liveness rebuilds the dimension tuple with the lower citation_quality score.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/open_outcome/cli.py",
+          "title": "sdk-python cli py _head_check and _apply_url_liveness implementation",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://docs.python.org/3/library/urllib.request.html",
+          "title": "python stdlib urllib request reference describing HEAD request semantics",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "Transport errors URLError TimeoutError ConnectionError return None from _head_check so a flaky network is ignored; only true HTTP error responses count. This is intentional to avoid flaky-network false negatives in CI."
+    },
+    {
+      "statement": "two new pytest tests cover the downgrade-on-4xx path and the off-by-default invariant because test_check_urls_downgrades_on_broken monkeypatches _head_check to return 404 and confirms the CLI exit is still 0 with a still-passing overall while test_check_urls_off_by_default asserts that _head_check is never called when --check-urls is absent.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/tests/test_cli.py",
+          "title": "sdk-python test_cli py with the two new --check-urls tests",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes/actions/workflows/python-sdk.yml",
+          "title": "python-sdk workflow that runs the test suite on every PR",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "TS-side --check-urls is not implemented in this PR; the TS SDK does not expose a CLI so the flag has no TS analogue and the typescript verifier remains deterministic by construction."
+    }
+  ],
+  "open_questions": [
+    "Should --check-urls also call out which specific URLs returned 4xx 5xx in the justification field rather than just the count to help operators triage which citations need updating?"
+  ],
+  "methodology_notes": "Implemented _head_check using urllib request HEAD with a 5 second default timeout returning the integer status code on HTTPError and None on transport error. Wired _apply_url_liveness to rebuild the dimensions tuple with the lower citation_quality score and recompute overall. Ran sdk-python pytest to confirm 29 of 29 pass including 2 new --check-urls tests."
+}

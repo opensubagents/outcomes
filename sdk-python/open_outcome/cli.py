@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import jsonschema
@@ -21,7 +23,61 @@ from pydantic import ValidationError
 from .conformance import validate_outcome_dict
 from .outcome import OutcomeDeclaration
 from .report import Report
+from .verdict import DimensionScore, Verdict
 from .verifier import REFERENCE_VERIFIER_ID, HeuristicVerifier
+
+
+def _head_check(url: str, timeout: float = 5.0) -> int | None:
+    """HEAD-request a URL; return HTTP status code or None on transport error.
+
+    Returns None for DNS failures, connection refusals, or timeouts so the
+    caller can distinguish transport problems (which we ignore) from HTTP
+    error responses (which we treat as broken links).
+    """
+    req = urllib.request.Request(url, method="HEAD")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
+    except (urllib.error.URLError, TimeoutError, ConnectionError):
+        return None
+
+
+def _apply_url_liveness(verdict: Verdict, report: Report) -> Verdict:
+    """Downgrade citation_quality by one (floor 1) if any citation returns 4xx/5xx."""
+    cits = report.all_citations()
+    broken: list[tuple[str, int]] = []
+    for c in cits:
+        status = _head_check(str(c.url))
+        if status is not None and status >= 400:
+            broken.append((str(c.url), status))
+    if not broken:
+        return verdict
+    new_dims: list[DimensionScore] = []
+    for d in verdict.dimensions:
+        if d.name == "citation_quality" and d.score > 1:
+            new_dims.append(
+                DimensionScore(
+                    name=d.name,
+                    score=d.score - 1,
+                    justification=(
+                        f"{d.justification}; {len(broken)}/{len(cits)} "
+                        f"citations returned HTTP error"
+                    ),
+                )
+            )
+        else:
+            new_dims.append(d)
+    overall = round(sum(d.score for d in new_dims) / len(new_dims), 1)
+    return Verdict(
+        spec_version=verdict.spec_version,
+        dimensions=tuple(new_dims),
+        overall=overall,
+        evidence=verdict.evidence,
+        notes=verdict.notes,
+        verifier_id=verdict.verifier_id,
+    )
 
 
 def _load_json(path: Path) -> dict:
@@ -32,7 +88,13 @@ def _load_json(path: Path) -> dict:
         raise SystemExit(2) from exc
 
 
-def _verify(outcome_path: Path, report_path: Path, floor: float, summary_md: Path | None) -> int:
+def _verify(
+    outcome_path: Path,
+    report_path: Path,
+    floor: float,
+    summary_md: Path | None,
+    check_urls: bool,
+) -> int:
     outcome_data = _load_json(outcome_path)
     report_data = _load_json(report_path)
 
@@ -45,6 +107,8 @@ def _verify(outcome_path: Path, report_path: Path, floor: float, summary_md: Pat
         return 2
 
     verdict = HeuristicVerifier().verify(outcome, report)
+    if check_urls:
+        verdict = _apply_url_liveness(verdict, report)
 
     if verdict.verifier_id != REFERENCE_VERIFIER_ID:
         print(
@@ -98,11 +162,22 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="append a one-row markdown table for $GITHUB_STEP_SUMMARY",
     )
+    verify.add_argument(
+        "--check-urls",
+        action="store_true",
+        help=(
+            "HEAD-request each citation URL; downgrade citation_quality by one "
+            "(floor 1) if any returns 4xx/5xx. Off by default — the gate stays "
+            "deterministic unless opted in."
+        ),
+    )
 
     args = parser.parse_args(argv)
 
     if args.cmd == "verify":
-        return _verify(args.outcome, args.report, args.floor, args.summary_md)
+        return _verify(
+            args.outcome, args.report, args.floor, args.summary_md, args.check_urls,
+        )
 
     parser.error(f"unknown command {args.cmd!r}")
     return 2

@@ -36,8 +36,16 @@ the time of scoring, the heuristic verifier drops `citation_quality`
 by one (floor 1). This is a freshness signal, not a correctness check:
 old citations may still be accurate, but stale references are a leading
 indicator that a report has not been re-verified against the latest
-upstream state. Implementations that need a stricter check can pair
-this with the optional `--check-urls` HEAD-request flag (D6).
+upstream state.
+
+**Optional URL liveness check (`--check-urls`).** The `open-outcome
+verify` CLI accepts an opt-in `--check-urls` flag that HEAD-requests
+each citation URL after the deterministic verdict is computed. If any
+URL returns a 4xx or 5xx status code, `citation_quality` is downgraded
+by one (floor 1). The flag is off by default so the gate remains
+deterministic and network-free; turning it on is a per-PR or per-CI
+decision. Transport errors (DNS failure, timeout, connection refused)
+are ignored so a flaky network does not silently break the gate.
 
 ### `coverage`
 
