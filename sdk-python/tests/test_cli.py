@@ -138,3 +138,38 @@ def test_verify_writes_summary_md(tmp_path: Path):
     body = summary.read_text(encoding="utf-8")
     assert "| p |" in body
     assert "pass" in body
+
+
+def test_check_urls_downgrades_on_broken(tmp_path: Path, monkeypatch):
+    """D6: --check-urls downgrades citation_quality by one when any URL is 4xx/5xx."""
+    from open_outcome import cli as cli_mod
+
+    o, r = _write_pair(tmp_path, _passing_outcome(), _passing_report())
+
+    # Patch _head_check to return 404 for every URL — exercised in-process so
+    # the monkeypatch takes effect (subprocess wouldn't see it).
+    monkeypatch.setattr(cli_mod, "_head_check", lambda url, timeout=5.0: 404)
+
+    rc = cli_mod.main(["verify", str(o), str(r), "--floor", "3.5", "--check-urls"])
+    # Bootstrap pair scores 5.0 originally; downgrading citation_quality from 5 to 4
+    # drops overall to 4.8 which still clears floor 3.5 — rc=0.
+    assert rc == 0
+
+
+def test_check_urls_off_by_default(tmp_path: Path, monkeypatch):
+    """D6: without --check-urls, the gate stays deterministic (no network)."""
+    from open_outcome import cli as cli_mod
+
+    o, r = _write_pair(tmp_path, _passing_outcome(), _passing_report())
+
+    called = {"n": 0}
+
+    def fail_if_called(url, timeout=5.0):
+        called["n"] += 1
+        return 404
+
+    monkeypatch.setattr(cli_mod, "_head_check", fail_if_called)
+
+    rc = cli_mod.main(["verify", str(o), str(r), "--floor", "3.5"])
+    assert rc == 0
+    assert called["n"] == 0, "head_check must not be called without --check-urls"

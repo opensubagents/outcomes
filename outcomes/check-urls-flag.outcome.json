@@ -1,0 +1,23 @@
+{
+  "title": "Optional --check-urls flag HEAD-requests each citation and downgrades citation_quality on 4xx or 5xx",
+  "as_of": "2026-05-22",
+  "question": "Does open-outcome verify accept an opt-in --check-urls flag that downgrades citation_quality by one with floor 1 when any citation URL returns 4xx or 5xx while keeping the default path deterministic with no network access?",
+  "success_criteria": [
+    "sdk-python open_outcome cli py exposes a --check-urls flag on the verify subcommand off by default",
+    "when --check-urls is set the CLI HEAD-requests each citation URL using urllib and downgrades citation_quality by one with floor 1 if any URL returns HTTP 400 or higher",
+    "transport errors DNS timeout connection refused are explicitly ignored so a flaky network does not silently break the gate",
+    "two new pytest tests cover both the downgrade-on-4xx path and the off-by-default invariant that head_check is not called without the flag",
+    "specification appendix-a-rubric md documents the optional flag under the citation_quality dimension"
+  ],
+  "archetype": "capability_audit",
+  "archetype_fields": {
+    "capabilities": [
+      "sdk-python cli py adds --check-urls verify subcommand argument",
+      "url liveness downgrade applies post-verdict to keep HeuristicVerifier pure",
+      "transport errors ignored to avoid flaky-network false fails",
+      "two new tests pass plus the existing 27 tests",
+      "appendix-a-rubric md documents the optional flag"
+    ]
+  },
+  "requester": "alex@jadecli.com"
+}
