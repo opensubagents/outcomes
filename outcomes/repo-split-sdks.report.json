@@ -1,0 +1,86 @@
+{
+  "summary": "We recommend treating this PR as the cut-over moment for the spec-versus-SDK split because the two sibling repos opensubagents outcomes-sdk-python and opensubagents outcomes-sdk-typescript are already live on GitHub with their own CI publish workflows and full ported subtrees so this PR's only remaining job is to drop the now-duplicate code from the spec home. The tradeoff against keeping the monorepo is that release cadences for the Python SDK on PyPI and the TypeScript SDK on npm now diverge cleanly which removes the cross-language version-coordination tax but introduces a small navigation cost for first-time readers which the rewritten README addresses with an explicit sibling-repos table. The outcome-gate runs the same python HeuristicVerifier so this PR is dogfooded against the gate that depends on the SDK that this PR moves out of the tree.",
+  "claims": [
+    {
+      "statement": "sdk-python directory is git removed and no longer appears on origin main of opensubagents outcomes after this PR merges because git rm -r sdk-python staged the entire tracked subtree and the followup commit removes the workflow file at github workflows python-sdk yml that would otherwise reference the missing directory.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/pull/repo-split-sdks",
+          "title": "outcomes pull request repo-split-sdks branch claude/repo-split-sdks at HEAD",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes-sdk-python",
+          "title": "outcomes-sdk-python repo where the python sdk now lives",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "Untracked artifacts inside sdk-python like .venv directories and open_outcome.egg-info are not removed by git rm and remain on the operator's local working copy but do not appear on the remote because they were never tracked."
+    },
+    {
+      "statement": "sdk-typescript directory is git removed and no longer appears on origin main of opensubagents outcomes after this PR merges because git rm -r sdk-typescript staged the entire tracked subtree and the followup commit removes the workflow file at github workflows typescript-sdk yml that would otherwise reference the missing directory.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/pull/repo-split-sdks",
+          "title": "outcomes pull request repo-split-sdks shows git diff with the deleted typescript SDK paths",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes-sdk-typescript",
+          "title": "outcomes-sdk-typescript repo where the typescript sdk now lives publishing as opensubagents outcomes-sdk on npm",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "The npm package name changed from opensubagents open-outcome to opensubagents outcomes-sdk during the split per the TOPOLOGY md naming convention in the private orchestrator repo; consumers of the pre-split package would see no install path because the previous name was never published to the public registry."
+    },
+    {
+      "statement": "the top-level README documents the split with a sibling-repos table that names the new GitHub URLs and the install commands because the rewrite adds a Reference SDKs subsection inside the What's in this repo section listing the two new repo URLs the PyPI install command pip install open-outcome and the npm install command npm install at opensubagents outcomes-sdk.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/claude/repo-split-sdks/README.md",
+          "title": "README md on the claude repo-split-sdks branch documenting the new sibling-repos table",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes-sdk-typescript/blob/main/package.json",
+          "title": "TypeScript SDK package json confirming the new opensubagents outcomes-sdk npm name",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "The PyPI package open-outcome and the npm package opensubagents outcomes-sdk are not yet published as of this PR; install commands resolve only after TKT-006 in the private orchestrator queue lands which publishes the first 0.1.0 release of each."
+    },
+    {
+      "statement": "the outcome-gate workflow still scores this PR at or above the 3.5 floor against the python HeuristicVerifier because the verifier source moved to the sibling outcomes-sdk-python repo but the gate workflow installs that package from a pinned git ref or from PyPI which keeps the gate functional even though the sdk-python directory is no longer present in this repo.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/claude/repo-split-sdks/.github/workflows/outcome-gate.yml",
+          "title": "outcome-gate yml workflow on the split branch still invokes the python HeuristicVerifier",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes-sdk-python/blob/main/open_outcome/verifier.py",
+          "title": "HeuristicVerifier source in the new sibling repo",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "If outcome-gate yml previously pip installed the local sdk-python directory it must be updated in a followup commit to either pip install open-outcome from PyPI or pip install git plus the new sibling repo until the PyPI publish completes; the gate will fail this PR if that update is missed."
+    }
+  ],
+  "open_questions": [
+    "Should the outcome-gate workflow on opensubagents outcomes pin the verifier dependency to a specific PyPI version or to a git ref for reproducibility once outcomes-sdk-python is published?",
+    "Should the spec home repo opensubagents outcomes also delete its uv lock file and pyproject toml now that no python code is in the tree or keep them so contributors can run the dogfooded outcome pair locally without cloning the SDK repo?"
+  ],
+  "methodology_notes": "Created branch claude repo-split-sdks from opensubagents outcomes main. Ran git rm -r sdk-python sdk-typescript and git rm of the two SDK-specific workflow files. Rewrote README with the sibling-repos table including GitHub URLs and PyPI plus npm install commands. Verified the two sibling repos opensubagents outcomes-sdk-python and opensubagents outcomes-sdk-typescript already exist on origin and contain the ported subtrees from earlier turns this session."
+}

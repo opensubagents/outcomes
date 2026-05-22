@@ -22,14 +22,25 @@ The full rationale lives in [`docs/founding-research.md`](./docs/founding-resear
 
 ## What's in this repo
 
+This repo is the **spec home**. The reference SDKs that implement the spec live in sibling repos so they can release independently:
+
 | Path | What it is |
 |---|---|
 | [`specification/`](./specification/) | The normative spec. RFC 2119 keywords (MUST / SHOULD / MAY) inside blockquotes under numbered `Requirement` headings. |
 | [`schema/`](./schema/) | JSON Schemas for `outcome`, `verdict`, and `evidence`. The schemas are the machine-checkable form of the spec. |
-| [`sdk-python/`](./sdk-python/) | Reference Python SDK — pydantic v2 models, `HeuristicVerifier`, OTel span helper. Package name `open-outcome`. |
-| [`sdk-typescript/`](./sdk-typescript/) | Reference TypeScript SDK — zod schemas, `HeuristicVerifier`, OTel span helper. Package name `@opensubagents/open-outcome`. |
+| [`outcomes/`](./outcomes/) | Dogfooded outcome+report pairs that exercise the spec against itself. |
 | [`docs/`](./docs/) | Founding research, ADRs (architectural decision records), and research reviews. |
 | [`GOVERNANCE.md`](./GOVERNANCE.md), [`MAINTAINERS.md`](./MAINTAINERS.md), [`MATURITY.md`](./MATURITY.md) | Governance, current maintainers, and the Experimental → Hardening → Stable lifecycle. |
+
+### Reference SDKs (separate repos)
+
+| Repo | Package | Install |
+|---|---|---|
+| [`opensubagents/outcomes-sdk-python`](https://github.com/opensubagents/outcomes-sdk-python) | `open-outcome` on [PyPI](https://pypi.org/project/open-outcome/) | `pip install open-outcome` or `uv add open-outcome` |
+| [`opensubagents/outcomes-sdk-typescript`](https://github.com/opensubagents/outcomes-sdk-typescript) | `@opensubagents/outcomes-sdk` on [npm](https://www.npmjs.com/package/@opensubagents/outcomes-sdk) | `npm install @opensubagents/outcomes-sdk` |
+| [`opensubagents/outcomes-mcp`](https://github.com/opensubagents/outcomes-mcp) | MCP server wrapping the verifier | (deployed on Cloudflare Workers) |
+
+Both SDKs implement the **same `HeuristicVerifier` algorithm** with shared fixtures so they produce equal verdicts on the same input.
 
 ## The three shapes
 
@@ -69,20 +80,20 @@ verdict.to_otel_attributes()          # gen_ai.outcome.verdict, gen_ai.outcome.c
 ## Quickstart
 
 ```sh
-# Spec + schemas
+# Spec + schemas (this repo)
 ls specification/ schema/
-
-# Python reference SDK
-cd sdk-python && uv pip install -e '.[dev]' && pytest
-
-# TypeScript reference SDK
-cd sdk-typescript && pnpm install && pnpm test
 ```
 
-Each SDK's test suite is the executable proof of conformance — it builds
-`OutcomeDeclaration` / `Report` / `Verdict` instances against the JSON
-Schemas in [`schema/`](./schema/) and runs them through
-`HeuristicVerifier`.
+Then install one of the reference SDKs:
+
+```sh
+# Python
+pip install open-outcome
+# TypeScript
+npm install @opensubagents/outcomes-sdk
+```
+
+Each SDK's test suite is the executable proof of conformance — both repos build `OutcomeDeclaration` / `Report` / `Verdict` instances against the JSON Schemas in [`schema/`](./schema/) of this repo and run them through `HeuristicVerifier`.
 
 ## Status
 
