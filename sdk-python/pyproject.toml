@@ -23,6 +23,9 @@ dev = [
 Homepage = "https://github.com/opensubagents/outcomes"
 Specification = "https://github.com/opensubagents/outcomes/blob/main/specification/README.md"
 
+[project.scripts]
+open-outcome = "open_outcome.cli:main"
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"

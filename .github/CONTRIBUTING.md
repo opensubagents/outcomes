@@ -41,8 +41,49 @@ cd sdk-typescript && pnpm install && pnpm test && cd ..
    changes go in `sdk-typescript/test/`.
 5. **Update the schemas, spec, and SDKs in the same PR** if your change
    touches normative shape. CI will fail otherwise.
-6. **Open a draft PR early**. Mark ready-for-review when CI is green and the
-   ADR (if any) is in place.
+6. **Open a regular (non-draft) PR** by default. Use draft only when the
+   work is explicitly incomplete and you want CI feedback before a real
+   review.
+
+## Outcome gate
+
+Every PR is gated by the repo's own rubric. Before merge, CI runs the
+reference `HeuristicVerifier` (see
+[Appendix A — Reference rubric](../specification/appendix-a-rubric.md))
+against the outcome+report pair the PR introduces. The PR cannot merge
+unless `verdict.overall >= 3.5`.
+
+**Every PR — no exemptions — adds exactly two files under `outcomes/`**:
+
+- `outcomes/<slug>.outcome.json` — an
+  [`OutcomeDeclaration`](../specification/sections/01-outcome-declaration.md)
+  describing what the PR claims to achieve. Required fields: `title`,
+  `as_of`, `question`, `success_criteria`. Validates against
+  [`schema/outcome.schema.json`](../schema/outcome.schema.json).
+- `outcomes/<slug>.report.json` — a `Report` carrying the evidence (claims
+  with citations, summary, optional methodology notes) that the outcome is
+  met. Use `kind: "primary"` for first-party sources (the workflow file
+  you're adding, the GitHub API response, etc.) — the rubric rewards
+  primary-source ratios at or above 50%.
+
+Slugs are **append-only**: a PR may not modify a slug that already exists
+on `main`. Pick a new, short kebab-case slug per PR (e.g.
+`revert-session-start-hook`, `add-coverage-axes`).
+
+Verify locally before pushing:
+
+```sh
+cd sdk-python && pip install -e .
+python -m open_outcome.cli verify \
+    ../outcomes/<slug>.outcome.json \
+    ../outcomes/<slug>.report.json
+```
+
+Exit 0 means the gate will pass on CI. Exit 1 means the pair scores below
+3.5 — improve the report (more primary citations, mention each success
+criterion explicitly in a claim, include `methodology_notes` and at least
+one `open_questions` entry). Exit 2 means the JSON does not validate
+against the schema.
 
 ## Conformance to the spec
 
