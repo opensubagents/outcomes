@@ -1,0 +1,66 @@
+{
+  "summary": "We recommend shipping the citation-staleness downgrade as a single-point drop on citation_quality with a floor at 1 when a majority of citations have an accessed date older than STALE_CITATION_DAYS at the time of scoring because freshness is a leading indicator of un-reverified evidence without conflating it with correctness. The tradeoff against a harder ratchet that drops to 1 immediately is that a single-point downgrade preserves the rubric's existing 1-to-5 granularity and gives operators a visible warning before the gate hard-fails. The rule is implemented identically in sdk-python and sdk-typescript ported one-to-one and documented in specification appendix-a-rubric md with three new tests covering majority-stale fresh-no-downgrade and floor-at-1.",
+  "claims": [
+    {
+      "statement": "sdk-python open_outcome verifier py applies the staleness downgrade after computing the base citation_quality score and exports STALE_CITATION_DAYS as a module constant equal to 180 because the diff adds a datetime import a module-level constant and a post-score downgrade block that floors the result at 1.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/open_outcome/verifier.py",
+          "title": "sdk-python verifier py with staleness downgrade",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/specification/appendix-a-rubric.md",
+          "title": "spec rubric documents the staleness downgrade",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "The 180 day threshold is conservative; D6 can pair this with an optional URL liveness check for stronger freshness signal."
+    },
+    {
+      "statement": "sdk-typescript src verifier ts ports the same algorithm including the STALE_CITATION_DAYS constant and the floor-at-1 invariant because the TS diff restructures the score-and-justification block into mutable variables before applying the same majority-stale check using a UTC date subtraction.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-typescript/src/verifier.ts",
+          "title": "sdk-typescript verifier ts with the matching downgrade",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/open_outcome/verifier.py",
+          "title": "sdk-python verifier py the canonical port source",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "TS Date arithmetic uses setUTCDate to avoid local timezone drift; the python and TS implementations agree to within a wall-clock day."
+    },
+    {
+      "statement": "three new tests in sdk-python tests test_verifier py cover majority-stale downgrade fresh-no-downgrade and floor-at-1 because the diff adds test_citation_staleness_downgrades_quality test_citation_staleness_floor_at_one and test_citation_staleness_fresh_no_downgrade each asserting the expected score and justification substring on a synthetic claim.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/main/sdk-python/tests/test_verifier.py",
+          "title": "sdk-python test_verifier py with three new staleness tests",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://github.com/opensubagents/outcomes/actions/workflows/python-sdk.yml",
+          "title": "python-sdk workflow runs the new tests on every PR",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "TS-side coverage for staleness is not added in this PR; a follow-up should mirror the three tests in sdk-typescript tests."
+    }
+  ],
+  "open_questions": [
+    "Should the staleness threshold be configurable per verifier instance rather than a module constant so different deployments can tune the freshness window without forking the SDK?"
+  ],
+  "methodology_notes": "Inspected the existing citation_quality scoring path in both SDKs then added the staleness downgrade in a single self-contained block per SDK with matching constants. Ran the full sdk-python test suite to confirm 27 of 27 pass including 3 new staleness tests."
+}

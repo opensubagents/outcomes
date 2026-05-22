@@ -11,6 +11,8 @@ import { type DimensionScore, type Verdict } from "./verdict.js";
 
 export const REFERENCE_VERIFIER_ID = "open-outcome.typescript.heuristic";
 
+export const STALE_CITATION_DAYS = 180;
+
 export interface Verifier {
   verify(outcome: OutcomeDeclaration, report: Report): Verdict;
 }
@@ -85,29 +87,38 @@ export class HeuristicVerifier implements Verifier {
     };
     for (const c of cits) counts[c.kind] += 1;
     const primaryShare = counts.primary / cits.length;
+    let score: number;
+    let justification: string;
     if (primaryShare >= 0.5) {
-      return {
-        name: "citation_quality",
-        score: 5,
-        justification: `${counts.primary}/${cits.length} primary`,
-      };
+      score = 5;
+      justification = `${counts.primary}/${cits.length} primary`;
     } else if (primaryShare >= 0.25) {
-      return {
-        name: "citation_quality",
-        score: 4,
-        justification: `${counts.primary}/${cits.length} primary`,
-      };
+      score = 4;
+      justification = `${counts.primary}/${cits.length} primary`;
     } else if (counts.primary >= 1) {
-      return {
-        name: "citation_quality",
-        score: 3,
-        justification: "at least one primary, mostly secondary",
-      };
+      score = 3;
+      justification = "at least one primary, mostly secondary";
     } else if (counts.secondary >= 1) {
-      return { name: "citation_quality", score: 2, justification: "secondary only" };
+      score = 2;
+      justification = "secondary only";
     } else {
-      return { name: "citation_quality", score: 1, justification: "community-only sourcing" };
+      score = 1;
+      justification = "community-only sourcing";
     }
+
+    // Citation-staleness downgrade: if a majority of citations are older
+    // than STALE_CITATION_DAYS at the time of scoring, drop one point.
+    // Floor at 1.
+    const today = new Date();
+    const staleThreshold = new Date(today);
+    staleThreshold.setUTCDate(staleThreshold.getUTCDate() - STALE_CITATION_DAYS);
+    const staleCount = cits.filter((c) => new Date(c.accessed) < staleThreshold).length;
+    if (staleCount * 2 > cits.length && score > 1) {
+      score -= 1;
+      justification = `${justification}; ${staleCount}/${cits.length} citations stale (>${STALE_CITATION_DAYS}d)`;
+    }
+
+    return { name: "citation_quality", score, justification };
   }
 
   private scoreCoverage(outcome: OutcomeDeclaration, report: Report): DimensionScore {

@@ -139,3 +139,65 @@ def test_overconfident_claim_caught():
     v = HeuristicVerifier().verify(outcome, report)
     calib = next(d for d in v.dimensions if d.name == "confidence_calibration")
     assert calib.score < 5
+
+
+def test_citation_staleness_downgrades_quality():
+    """D5: majority-stale citations drop citation_quality by one."""
+    outcome = _make_outcome()
+    stale_claim = Claim(
+        statement="The CI artifact hash equals the local hash.",
+        confidence=Confidence.HIGH,
+        citations=(
+            Citation(
+                url="https://example.com/ci-run-1234",
+                title="CI run #1234",
+                accessed=date(2024, 1, 1),  # >180 days old at test time
+                kind=SourceKind.PRIMARY,
+            ),
+            Citation(
+                url="https://example.com/local-build-log",
+                title="Local build log",
+                accessed=date(2024, 1, 1),  # >180 days old at test time
+                kind=SourceKind.PRIMARY,
+            ),
+        ),
+    )
+    report = Report(summary="hash compared.", claims=(stale_claim,))
+    v = HeuristicVerifier().verify(outcome, report)
+    cq = next(d for d in v.dimensions if d.name == "citation_quality")
+    # 2/2 primary would normally score 5; majority-stale downgrades by 1.
+    assert cq.score == 4
+    assert "stale" in cq.justification
+
+
+def test_citation_staleness_floor_at_one():
+    """D5: staleness cannot drop a score below the floor of 1."""
+    outcome = _make_outcome()
+    stale_community = Claim(
+        statement="Stale community evidence only.",
+        confidence=Confidence.LOW,
+        citations=(
+            Citation(
+                url="https://reddit.com/r/x/1",
+                title="r1",
+                accessed=date(2024, 1, 1),
+                kind=SourceKind.COMMUNITY,
+            ),
+        ),
+    )
+    report = Report(summary="x.", claims=(stale_community,))
+    v = HeuristicVerifier().verify(outcome, report)
+    cq = next(d for d in v.dimensions if d.name == "citation_quality")
+    # Base score 1 (community-only); staleness must not drop it below 1.
+    assert cq.score == 1
+
+
+def test_citation_staleness_fresh_no_downgrade():
+    """D5: fresh citations do not trigger the downgrade."""
+    outcome = _make_outcome()
+    fresh_claim = _make_high_confidence_claim()  # accessed 2026-05-21, fresh
+    report = Report(summary="hash compared.", claims=(fresh_claim,))
+    v = HeuristicVerifier().verify(outcome, report)
+    cq = next(d for d in v.dimensions if d.name == "citation_quality")
+    assert cq.score == 5
+    assert "stale" not in cq.justification

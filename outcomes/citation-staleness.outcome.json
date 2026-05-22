@@ -1,0 +1,21 @@
+{
+  "title": "Citation-staleness downgrade for HeuristicVerifier across spec sdk-python sdk-typescript and CLI test",
+  "as_of": "2026-05-22",
+  "question": "Does the reference HeuristicVerifier in both sdk-python and sdk-typescript apply a single-point downgrade to citation_quality when a majority of citations have an accessed date older than 180 days while keeping the score floor at 1 and is the rule documented in specification appendix-a-rubric md and covered by tests?",
+  "success_criteria": [
+    "sdk-python open_outcome verifier py applies the staleness downgrade after computing the base citation_quality score and exports STALE_CITATION_DAYS as a module constant set to 180",
+    "sdk-typescript src verifier ts ports the same algorithm including the STALE_CITATION_DAYS constant and the floor-at-1 invariant",
+    "specification appendix-a-rubric md documents the staleness downgrade rule under the citation_quality dimension",
+    "sdk-python tests test_verifier py has three new tests covering majority-stale downgrade fresh-no-downgrade and floor-at-1"
+  ],
+  "archetype": "capability_audit",
+  "archetype_fields": {
+    "capabilities": [
+      "sdk-python HeuristicVerifier applies staleness downgrade with floor 1",
+      "sdk-typescript HeuristicVerifier ports the same algorithm",
+      "appendix-a-rubric md documents the rule",
+      "three new tests in sdk-python cover the new behavior"
+    ]
+  },
+  "requester": "alex@jadecli.com"
+}

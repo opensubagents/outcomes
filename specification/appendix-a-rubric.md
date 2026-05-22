@@ -30,6 +30,15 @@ The fraction of [citations](./glossary.md#citation) that are of
 the URL returns and that quotes match the source body; the heuristic
 verifier at v0.1 does neither.
 
+**Staleness downgrade.** If a majority of citations have an
+`accessed` date older than `STALE_CITATION_DAYS` (180 by default) at
+the time of scoring, the heuristic verifier drops `citation_quality`
+by one (floor 1). This is a freshness signal, not a correctness check:
+old citations may still be accurate, but stale references are a leading
+indicator that a report has not been re-verified against the latest
+upstream state. Implementations that need a stricter check can pair
+this with the optional `--check-urls` HEAD-request flag (D6).
+
 ### `coverage`
 
 The fraction of `success_criteria` and archetype-specific axes (e.g. a
