@@ -1,8 +1,7 @@
 // Verifier interface and the reference HeuristicVerifier.
 // Implements Section 2 (Verifier).
 //
-// Algorithm is a one-to-one port of the Python `HeuristicVerifier` so the
-// `examples/research-engineering/` end-to-end can assert byte-level parity.
+// Algorithm is a one-to-one port of the Python `HeuristicVerifier`.
 
 import { SPEC_VERSION } from "./conformance.js";
 import { Confidence, SourceKind, type Citation } from "./evidence.js";

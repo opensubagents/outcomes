@@ -28,8 +28,7 @@ The full rationale lives in [`docs/founding-research.md`](./docs/founding-resear
 | [`schema/`](./schema/) | JSON Schemas for `outcome`, `verdict`, and `evidence`. The schemas are the machine-checkable form of the spec. |
 | [`sdk-python/`](./sdk-python/) | Reference Python SDK — pydantic v2 models, `HeuristicVerifier`, OTel span helper. Package name `open-outcome`. |
 | [`sdk-typescript/`](./sdk-typescript/) | Reference TypeScript SDK — zod schemas, `HeuristicVerifier`, OTel span helper. Package name `@opensubagents/open-outcome`. |
-| [`examples/research-engineering/`](./examples/research-engineering/) | End-to-end example consuming the sibling plugin [`opensubagents/research-engineering`](https://github.com/opensubagents/research-engineering): re-grades one of its reports through the Open Outcome SDK and asserts the two verdicts agree. |
-| [`docs/`](./docs/) | Founding research, ADRs (architectural decision records). |
+| [`docs/`](./docs/) | Founding research, ADRs (architectural decision records), and research reviews. |
 | [`GOVERNANCE.md`](./GOVERNANCE.md), [`MAINTAINERS.md`](./MAINTAINERS.md), [`MATURITY.md`](./MATURITY.md) | Governance, current maintainers, and the Experimental → Hardening → Stable lifecycle. |
 
 ## The three shapes
@@ -78,10 +77,12 @@ cd sdk-python && uv pip install -e '.[dev]' && pytest
 
 # TypeScript reference SDK
 cd sdk-typescript && pnpm install && pnpm test
-
-# End-to-end with the research-engineering plugin
-cd examples/research-engineering && uv pip install -e . && python run.py
 ```
+
+Each SDK's test suite is the executable proof of conformance — it builds
+`OutcomeDeclaration` / `Report` / `Verdict` instances against the JSON
+Schemas in [`schema/`](./schema/) and runs them through
+`HeuristicVerifier`.
 
 ## Status
 
