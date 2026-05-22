@@ -1,0 +1,60 @@
+{
+  "summary": "We recommend installing commit-commands at project scope rather than relying on user-scope installs because plugins enumerated in the project settings file travel with the repo and reach every Claude Code session deterministically. The tradeoff is that contributors lose per-checkout opt-out but gain consistent commit-message shape across the dogfood ladder. The PR also adds a project-scope CLAUDE memory file at the repo root so the policy is read on session start and updates CONTRIBUTING so humans discover the slash-command workflow.",
+  "claims": [
+    {
+      "statement": "the commit-commands plugin from claude-plugins-official is enabled at project scope because .claude/settings.json declares enabledPlugins with commit-commands@claude-plugins-official set to true and Claude Code reads project-scope settings before user-scope settings.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/claude/install-commit-commands-project-scope/.claude/settings.json",
+          "title": ".claude/settings.json declares enabledPlugins with commit-commands@claude-plugins-official",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://code.claude.com/docs/en/plugins.md",
+          "title": "Claude Code plugins documentation describes project-scope enabledPlugins precedence",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "Plugin source claude-plugins-official is a public Anthropic plugin marketplace; if a future contributor wants to vendor commit-commands locally that would be a follow-up ADR not a revisit of this PR."
+    },
+    {
+      "statement": "CLAUDE.md documents the project-scope plugin and MCP policy because the new file at the repo root explains that every Claude Code plugin or MCP server used in this repository is version-controlled at project scope and lists currently-enabled plugins in a table.",
+      "confidence": "high",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/claude/install-commit-commands-project-scope/CLAUDE.md",
+          "title": "CLAUDE.md at repo root documents project-scope plugin and MCP policy",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        },
+        {
+          "url": "https://code.claude.com/docs/en/memory.md",
+          "title": "Claude Code memory documentation describes CLAUDE.md project-scope file precedence",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "The CLAUDE.md references docs/plans/2026-05-21-drop-bootstrap-and-audit-otel.md for the broader linearized-dogfood discipline but that plan doc is unchanged in this PR."
+    },
+    {
+      "statement": "CONTRIBUTING.md surfaces the new commit workflow to human contributors because the file is updated in this PR alongside the settings change.",
+      "confidence": "medium",
+      "citations": [
+        {
+          "url": "https://github.com/opensubagents/outcomes/blob/claude/install-commit-commands-project-scope/.github/CONTRIBUTING.md",
+          "title": ".github/CONTRIBUTING.md updated alongside the plugin install",
+          "accessed": "2026-05-22",
+          "kind": "primary"
+        }
+      ],
+      "caveats": "Confidence medium not high because the CONTRIBUTING.md change is small and discoverability depends on contributors actually reading it before committing."
+    }
+  ],
+  "open_questions": [
+    "Should follow-up branches add more plugins one-per-branch with their own pair as the linearized-dogfood plan v2 envisions, or should multiple plugins be bundled when they are clearly co-located in purpose?"
+  ],
+  "methodology_notes": "Bootstrap pair authored against the python HeuristicVerifier shape used by the outcome-gate workflow. Branch rebased onto main before the pair was added so the diff is exactly the plugin install plus CLAUDE.md plus CONTRIBUTING.md plus this pair. Local verification against open_outcome HeuristicVerifier deferred to CI run; if the gate scores below 3.5 the report will be revised."
+}

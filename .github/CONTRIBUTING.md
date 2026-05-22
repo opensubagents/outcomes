@@ -4,6 +4,10 @@ Thank you for your interest in contributing. This document is a quick guide
 for working with this repository. Governance — who decides what, and how —
 lives in [GOVERNANCE.md](../GOVERNANCE.md).
 
+For the Claude Code agent's development discipline (project-scope
+plugins, one-per-branch dogfood ladder, dogfood verdict threshold),
+see [`CLAUDE.md`](../CLAUDE.md) at the repo root.
+
 ## Quick start
 
 ```sh
