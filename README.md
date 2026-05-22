@@ -94,3 +94,4 @@ feedback on. File issues, open PRs, or start with an ADR.
 ## License
 
 Apache-2.0 — see [`LICENSE`](./LICENSE).
+
